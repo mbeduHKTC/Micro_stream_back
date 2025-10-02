@@ -15,8 +15,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- * Captures raw microphone audio and replays it through the voice communication stream.
- * This keeps the audio routing managed by the Telecom stack (e.g. hearing aids) intact.
+ * Captures raw microphone audio and replays it through a media playback stream so routing is
+ * handled by the system like any other player (including hearing aids / Bluetooth endpoints).
  */
 class LoopbackAudioEngine(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
@@ -34,7 +34,7 @@ class LoopbackAudioEngine(
         val bufferSize = minBufferSize.coerceAtLeast(sampleRate)
 
         val record = AudioRecord.Builder()
-            .setAudioSource(MediaRecorder.AudioSource.VOICE_COMMUNICATION)
+            .setAudioSource(MediaRecorder.AudioSource.MIC)
             .setAudioFormat(
                 AudioFormat.Builder()
                     .setSampleRate(sampleRate)
@@ -48,7 +48,7 @@ class LoopbackAudioEngine(
         val track = AudioTrack.Builder()
             .setAudioAttributes(
                 AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
                     .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
                     .build()
             )

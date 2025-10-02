@@ -20,7 +20,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.example.hearingaidstreamer.R
-import com.example.hearingaidstreamer.audio.LoopbackAudioEngine
+import com.example.hearingaidstreamer.media.StreamMediaSessionController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,7 +37,7 @@ import java.util.function.Consumer
 class TelecomCallManager(
     private val context: Context,
     private val scope: CoroutineScope,
-    private val audioEngine: LoopbackAudioEngine
+    private val mediaController: StreamMediaSessionController
 ) {
 
     private val telecomManager: TelecomManager =
@@ -69,7 +69,7 @@ class TelecomCallManager(
         }
 
         override fun onSetInactive(wasCompleted: Consumer<Boolean>) {
-            scope.launch { audioEngine.stop() }
+            scope.launch { mediaController.pause() }
             _state.value = CallLifecycleState.Ending
             wasCompleted.accept(true)
         }
@@ -91,6 +91,7 @@ class TelecomCallManager(
             wasCompleted.accept(true)
         }
     }
+
 
     private val eventCallback = object : CallEventCallback {
         override fun onCallEndpointChanged(newCallEndpoint: CallEndpoint) {
@@ -176,7 +177,7 @@ class TelecomCallManager(
     }
 
     private suspend fun stopCallInternal(disconnectCause: DisconnectCause) {
-        audioEngine.stop()
+        mediaController.stop()
         withContext(Dispatchers.Main) {
             _state.value = CallLifecycleState.Idle
             _availableEndpoints.value = emptyList()
@@ -186,7 +187,7 @@ class TelecomCallManager(
     }
 
     private suspend fun activateCall() {
-        audioEngine.start(scope)
+        mediaController.play()
         withContext(Dispatchers.Main) {
             _state.value = CallLifecycleState.Active
         }

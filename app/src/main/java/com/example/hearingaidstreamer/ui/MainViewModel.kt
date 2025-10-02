@@ -8,19 +8,34 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.hearingaidstreamer.R
 import com.example.hearingaidstreamer.audio.LoopbackAudioEngine
+import com.example.hearingaidstreamer.media.StreamMediaSessionController
 import com.example.hearingaidstreamer.telecom.CallLifecycleState
 import com.example.hearingaidstreamer.telecom.TelecomCallManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class MainViewModel(private val appContext: Context) : ViewModel() {
 
     private val audioEngine = LoopbackAudioEngine()
 
-    private val callManager: TelecomCallManager? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-        TelecomCallManager(appContext, viewModelScope, audioEngine)
-    } else {
-        null
+    private val mediaController: StreamMediaSessionController?
+    private val callManager: TelecomCallManager?
+
+    init {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            var createdManager: TelecomCallManager? = null
+            val controller = StreamMediaSessionController(appContext, viewModelScope, audioEngine) {
+                createdManager?.stopCall()
+            }
+            val manager = TelecomCallManager(appContext, viewModelScope, controller)
+            createdManager = manager
+            mediaController = controller
+            callManager = manager
+        } else {
+            mediaController = null
+            callManager = null
+        }
     }
 
     private val unsupportedState = MutableStateFlow<CallLifecycleState>(
@@ -48,6 +63,9 @@ class MainViewModel(private val appContext: Context) : ViewModel() {
 
     override fun onCleared() {
         callManager?.stopCall()
+        mediaController?.let { controller ->
+            viewModelScope.launch { controller.release() }
+        }
         super.onCleared()
     }
 
