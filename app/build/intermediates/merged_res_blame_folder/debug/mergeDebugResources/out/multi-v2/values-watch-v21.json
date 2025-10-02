@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.example.hearingaidstreamer.app-mergeDebugResources-60:/values-watch-v21/values-watch-v21.xml",
+            "map": [
+                {
+                    "source": "/home/mbedu/.gradle/caches/transforms-4/114be1d92056cb420d3c47e7d10b8647/transformed/appcompat-1.6.1/res/values-watch-v21/values-watch-v21.xml",
+                    "from": {
+                        "startLines": "2,6,10",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,271,499",
+                        "endLines": "5,9,13",
+                        "endColumns": "12,12,12",
+                        "endOffsets": "266,494,724"
+                    }
+                }
+            ]
+        }
+    ]
+}

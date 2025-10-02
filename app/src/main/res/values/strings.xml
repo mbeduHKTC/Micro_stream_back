@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Hearing Aid Streamer</string>
+    <string name="start_stream">Start Stream</string>
+    <string name="stop_stream">Stop Stream</string>
+    <string name="bluetooth_route">Bluetooth</string>
+    <string name="hearing_aid_route">Hearing Aid</string>
+    <string name="speaker_route">Speaker</string>
+    <string name="active_route">Active Route: %1$s</string>
+    <string name="microphone_permission_rationale">We need microphone access to stream audio.</string>
+    <string name="bluetooth_permission_rationale">Bluetooth permissions let us route audio to your hearing aids.</string>
+    <string name="call_permission_rationale">Grant call management permission so the system can expose hearing aid routing.</string>
+    <string name="call_active">Call streaming active</string>
+    <string name="call_idle">Stream idle</string>
+    <string name="request_route">Request Route</string>
+    <string name="route_pending">Route change pending…</string>
+    <string name="call_notification_channel_name">Hearing stream activity</string>
+    <string name="call_notification_channel_desc">Status of the managed VoIP audio stream.</string>
+    <string name="call_streaming_failed_in_use">Streaming failed because another stream is already active.</string>
+    <string name="call_streaming_failed_no_sender">Streaming failed: no streaming service available.</string>
+    <string name="call_streaming_failed_generic">Streaming could not start.</string>
+    <string name="call_activation_failed">Telecom could not activate the stream.</string>
+    <string name="unsupported_version">Requires Android 14 or newer.</string>
+    <string name="call_connecting">Connecting…</string>
+    <string name="call_ending">Tearing down stream…</string>
+    <string name="call_error_prefix">Stream error: %1$s</string>
+    <string name="grant_permissions">Grant required permissions</string>
+</resources>
