@@ -3730,6 +3730,7 @@ string call_connecting
 string call_ending
 string call_error_prefix
 string call_idle
+string call_muted
 string call_notification_answer_action
 string call_notification_answer_video_action
 string call_notification_channel_desc
@@ -3924,12 +3925,12 @@ string mtrl_switch_track_decoration_path
 string mtrl_switch_track_path
 string mtrl_timepicker_cancel
 string mtrl_timepicker_confirm
+string mute_stream
 string navigation_menu
 string not_selected
 string notification_pause
 string notification_permission_rationale
 string notification_play
-string notification_stop
 string off
 string on
 string password_toggle_content_description
@@ -3949,14 +3950,13 @@ string selected
 string side_sheet_accessibility_pane_title
 string side_sheet_behavior
 string speaker_route
-string start_stream
 string status_bar_notification_info_overflow
-string stop_stream
 string switch_role
 string tab
 string template_percent
 string tooltip_description
 string tooltip_label
+string unmute_stream
 string unsupported_version
 style AlertDialog_AppCompat
 style AlertDialog_AppCompat_Light

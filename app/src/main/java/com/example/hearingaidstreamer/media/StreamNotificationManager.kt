@@ -53,21 +53,15 @@ class StreamNotificationManager(private val context: Context) {
             )
         }
 
-        val stopAction = NotificationCompat.Action(
-            android.R.drawable.ic_menu_close_clear_cancel,
-            context.getString(R.string.notification_stop),
-            MediaButtonReceiver.buildMediaButtonPendingIntent(context, PlaybackStateCompat.ACTION_STOP)
-        )
-
         val style = MediaNotificationCompat.MediaStyle()
             .setMediaSession(mediaSessionToken)
-            .setShowActionsInCompactView(0, 1)
+            .setShowActionsInCompactView(0)
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(context.getString(R.string.app_name))
             .setContentText(
-                context.getString(if (isPlaying) R.string.call_active else R.string.call_idle)
+                context.getString(if (isPlaying) R.string.call_active else R.string.call_muted)
             )
             .setContentIntent(contentIntent)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -75,7 +69,6 @@ class StreamNotificationManager(private val context: Context) {
             .setOngoing(isPlaying)
             .setStyle(style)
             .addAction(playPauseAction)
-            .addAction(stopAction)
 
         notificationManager.notify(NOTIFICATION_ID, builder.build())
     }

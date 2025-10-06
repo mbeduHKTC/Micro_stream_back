@@ -17,6 +17,7 @@ string call_connecting
 string call_ending
 string call_error_prefix
 string call_idle
+string call_muted
 string call_notification_channel_desc
 string call_notification_channel_name
 string call_permission_rationale
@@ -26,14 +27,13 @@ string call_streaming_failed_no_sender
 string grant_permissions
 string hearing_aid_route
 string microphone_permission_rationale
+string mute_stream
 string notification_pause
 string notification_permission_rationale
 string notification_play
-string notification_stop
 string request_route
 string route_pending
 string speaker_route
-string start_stream
-string stop_stream
+string unmute_stream
 string unsupported_version
 style Theme.HearingAidStreamer

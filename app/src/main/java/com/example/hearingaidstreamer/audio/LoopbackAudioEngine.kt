@@ -46,6 +46,9 @@ class LoopbackAudioEngine(
     private var audioTrack: AudioTrack? = null
 
     @Volatile
+    private var muted: Boolean = false
+
+    @Volatile
     private var filtersDirty: Boolean = true
 
     fun updateSettings(block: (Settings) -> Settings) {
@@ -65,6 +68,7 @@ class LoopbackAudioEngine(
         val track = pipes.track
 
         track.play()
+        track.setVolume(if (muted) 0f else 1f)
         record.startRecording()
 
         audioRecord = record
@@ -98,7 +102,8 @@ class LoopbackAudioEngine(
                     val raw = buffer[i] / Short.MAX_VALUE.toFloat()
                     val filtered = filterChain.process(raw)
                     val amplified = (filtered * localSettings.gainMultiplier).coerceIn(-1f, 1f)
-                    buffer[i] = (amplified * Short.MAX_VALUE.toFloat()).toInt().coerceIn(-32768, 32767).toShort()
+                    val output = if (muted) 0f else amplified
+                    buffer[i] = (output * Short.MAX_VALUE.toFloat()).toInt().coerceIn(-32768, 32767).toShort()
 
                     val env = envelope.process(amplified)
                     accumulator += env
@@ -142,7 +147,15 @@ class LoopbackAudioEngine(
         audioRecord = null
         audioTrack = null
         filtersDirty = true
+        muted = false
     }
+
+    fun setMuted(muted: Boolean) {
+        this.muted = muted
+        audioTrack?.setVolume(if (muted) 0f else 1f)
+    }
+
+    fun isMuted(): Boolean = muted
 
     private fun createAudioPipes(settings: Settings): AudioPipes? {
         val preferred = settings.preferredSampleRate

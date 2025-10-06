@@ -64,6 +64,7 @@ class MainActivity : ComponentActivity() {
                     val gainPosition by viewModel.gainPosition.collectAsStateWithLifecycleCompat()
                     val includeMurmurs by viewModel.includeMurmurs.collectAsStateWithLifecycleCompat()
                     val mainsFrequency by viewModel.mainsFrequency.collectAsStateWithLifecycleCompat()
+                    val isMuted by viewModel.isMuted.collectAsStateWithLifecycleCompat()
 
                     val requiredPermissions = remember {
                         buildList {
@@ -87,6 +88,12 @@ class MainActivity : ComponentActivity() {
                         missing = missingPermissions(context, requiredPermissions)
                     }
 
+                    LaunchedEffect(missing, callState) {
+                        if (missing.isEmpty() && (callState is CallLifecycleState.Idle || callState is CallLifecycleState.Error)) {
+                            viewModel.startCall()
+                        }
+                    }
+
                     val permissionLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
                         contract = ActivityResultContracts.RequestMultiplePermissions()
                     ) { result ->
@@ -104,14 +111,14 @@ class MainActivity : ComponentActivity() {
                         gainPosition = gainPosition,
                         includeMurmurs = includeMurmurs,
                         mainsFrequency = mainsFrequency,
+                        isMuted = isMuted,
                         endpoints = endpoints,
                         activeEndpoint = activeEndpoint,
                         missingPermissions = missing,
                         onRequestPermissions = {
                             permissionLauncher.launch(requiredPermissions.toTypedArray())
                         },
-                        onStart = viewModel::startCall,
-                        onStop = viewModel::stopCall,
+                        onToggleMute = viewModel::toggleMute,
                         onSelectEndpoint = viewModel::requestEndpoint,
                         onGainChanged = viewModel::onGainPositionChanged,
                         onIncludeMurmursChanged = viewModel::onIncludeMurmursChanged,
@@ -130,12 +137,12 @@ private fun MainScreen(
     gainPosition: Float,
     includeMurmurs: Boolean,
     mainsFrequency: Int,
+    isMuted: Boolean,
     endpoints: List<android.telecom.CallEndpoint>,
     activeEndpoint: android.telecom.CallEndpoint?,
     missingPermissions: List<String>,
     onRequestPermissions: () -> Unit,
-    onStart: () -> Unit,
-    onStop: () -> Unit,
+    onToggleMute: () -> Unit,
     onSelectEndpoint: (android.telecom.CallEndpoint) -> Unit,
     onGainChanged: (Float) -> Unit,
     onIncludeMurmursChanged: (Boolean) -> Unit,
@@ -179,14 +186,10 @@ private fun MainScreen(
             if (missingPermissions.isNotEmpty()) {
                 PermissionCard(missingPermissions = missingPermissions, onRequestPermissions = onRequestPermissions)
             } else {
-                val canStart = state is CallLifecycleState.Idle || state is CallLifecycleState.Error
-                Button(onClick = onStart, enabled = canStart) {
-                    Text(text = context.getString(com.example.hearingaidstreamer.R.string.start_stream))
-                }
-
-                val canStop = state is CallLifecycleState.Active || state is CallLifecycleState.Connecting || state is CallLifecycleState.Ending
-                Button(onClick = onStop, enabled = canStop) {
-                    Text(text = context.getString(com.example.hearingaidstreamer.R.string.stop_stream))
+                val canToggleMute = state is CallLifecycleState.Active
+                Button(onClick = onToggleMute, enabled = canToggleMute) {
+                    val labelRes = if (isMuted) com.example.hearingaidstreamer.R.string.unmute_stream else com.example.hearingaidstreamer.R.string.mute_stream
+                    Text(text = context.getString(labelRes))
                 }
 
                 if (endpoints.isNotEmpty()) {

@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Hearing Aid Streamer</string>
-    <string name="start_stream">Start Stream</string>
-    <string name="stop_stream">Stop Stream</string>
     <string name="bluetooth_route">Bluetooth</string>
     <string name="hearing_aid_route">Hearing Aid</string>
     <string name="speaker_route">Speaker</string>
@@ -12,6 +10,7 @@
     <string name="call_permission_rationale">Grant call management permission so the system can expose hearing aid routing.</string>
     <string name="call_active">Call streaming active</string>
     <string name="call_idle">Stream idle</string>
+    <string name="call_muted">Audio muted</string>
     <string name="request_route">Request Route</string>
     <string name="route_pending">Route change pending…</string>
     <string name="call_notification_channel_name">Hearing stream activity</string>
@@ -26,7 +25,8 @@
     <string name="call_error_prefix">Stream error: %1$s</string>
     <string name="grant_permissions">Grant required permissions</string>
     <string name="notification_permission_rationale">Enable notifications so the stream stays visible in system controls.</string>
-    <string name="notification_play">Play</string>
-    <string name="notification_pause">Pause</string>
-    <string name="notification_stop">Stop</string>
+    <string name="notification_play">Unmute</string>
+    <string name="notification_pause">Mute</string>
+    <string name="mute_stream">Mute audio</string>
+    <string name="unmute_stream">Unmute audio</string>
 </resources>

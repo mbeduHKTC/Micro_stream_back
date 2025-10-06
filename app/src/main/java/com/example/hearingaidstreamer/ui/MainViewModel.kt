@@ -37,6 +37,9 @@ class MainViewModel(private val appContext: Context) : ViewModel() {
     private val _mainsFrequency = MutableStateFlow(50)
     val mainsFrequency: StateFlow<Int> = _mainsFrequency.asStateFlow()
 
+    private val _isMuted = MutableStateFlow(false)
+    val isMuted: StateFlow<Boolean> = _isMuted.asStateFlow()
+
     private val amplitudeHistory = ArrayDeque<Float>()
     private val _waveform = MutableStateFlow<List<Float>>(emptyList())
     val waveform: StateFlow<List<Float>> = _waveform.asStateFlow()
@@ -55,9 +58,13 @@ class MainViewModel(private val appContext: Context) : ViewModel() {
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             var createdManager: TelecomCallManager? = null
-            val controller = StreamMediaSessionController(appContext, viewModelScope, audioEngine) {
-                createdManager?.stopCall()
-            }
+            val controller = StreamMediaSessionController(
+                context = appContext,
+                scope = viewModelScope,
+                loopbackAudioEngine = audioEngine,
+                onStopRequested = { createdManager?.stopCall() },
+                onMuteStateChanged = { muted -> _isMuted.value = muted }
+            )
             val manager = TelecomCallManager(appContext, viewModelScope, controller)
             createdManager = manager
             mediaController = controller
@@ -112,6 +119,13 @@ class MainViewModel(private val appContext: Context) : ViewModel() {
     fun onMainsFrequencyChanged(frequency: Int) {
         _mainsFrequency.value = frequency
         audioEngine.updateSettings { current -> current.copy(mainsFrequencyHz = frequency) }
+    }
+
+    fun toggleMute() {
+        val target = !_isMuted.value
+        viewModelScope.launch {
+            mediaController?.setMuted(target)
+        }
     }
 
     override fun onCleared() {

@@ -27,7 +27,8 @@ class StreamMediaSessionController(
     private val context: Context,
     private val scope: CoroutineScope,
     private val loopbackAudioEngine: LoopbackAudioEngine,
-    private val onStopRequested: suspend () -> Unit
+    private val onStopRequested: suspend () -> Unit,
+    private val onMuteStateChanged: (Boolean) -> Unit
 ) {
 
     private val notificationManager = StreamNotificationManager(context)
@@ -86,6 +87,12 @@ class StreamMediaSessionController(
     private val compatToken: MediaSessionCompat.Token
         get() = MediaSessionCompat.Token.fromToken(mediaSession.sessionToken)
 
+    @Volatile
+    private var started = false
+
+    @Volatile
+    private var muted = false
+
     private suspend fun requestFocus(): Boolean {
         val manager = audioManager ?: return true
         return withContext(Dispatchers.Main) {
@@ -106,31 +113,47 @@ class StreamMediaSessionController(
             Log.w(SESSION_TAG, "Audio focus request was denied; continuing playback.")
         }
 
-        loopbackAudioEngine.start(scope)
+        if (!started) {
+            loopbackAudioEngine.start(scope)
+            started = true
+        }
+        setMutedInternal(false)
         withContext(Dispatchers.Main) {
             mediaSession.isActive = true
         }
-        updatePlaybackState(PlaybackState.STATE_PLAYING)
-        notificationManager.show(compatToken, isPlaying = true)
+        updatePlaybackState()
+        notificationManager.show(compatToken, isPlaying = !muted)
         return granted
     }
 
     suspend fun pause() {
-        loopbackAudioEngine.stop()
-        updatePlaybackState(PlaybackState.STATE_PAUSED)
-        notificationManager.show(compatToken, isPlaying = false)
+        setMutedInternal(true)
+        updatePlaybackState()
+        notificationManager.show(compatToken, isPlaying = !muted)
         abandonFocus()
     }
 
     suspend fun stop() {
+        setMutedInternal(false, forceNotify = true)
         loopbackAudioEngine.stop()
-        updatePlaybackState(PlaybackState.STATE_STOPPED)
+        started = false
+        updatePlaybackState()
         withContext(Dispatchers.Main) {
             mediaSession.isActive = false
         }
         notificationManager.dismiss()
         abandonFocus()
     }
+
+    suspend fun setMuted(value: Boolean) {
+        if (value) {
+            pause()
+        } else {
+            play()
+        }
+    }
+
+    fun isMuted(): Boolean = muted
 
     suspend fun release() {
         stop()
@@ -140,14 +163,26 @@ class StreamMediaSessionController(
         notificationManager.dismiss()
     }
 
-    private suspend fun updatePlaybackState(state: Int) {
+    private suspend fun updatePlaybackState() {
         withContext(Dispatchers.Main) {
+            val state = when {
+                !started -> PlaybackState.STATE_STOPPED
+                muted -> PlaybackState.STATE_PAUSED
+                else -> PlaybackState.STATE_PLAYING
+            }
             val playbackState = PlaybackState.Builder()
                 .setActions(PLAYBACK_ACTIONS)
                 .setState(state, PlaybackState.PLAYBACK_POSITION_UNKNOWN, if (state == PlaybackState.STATE_PLAYING) 1f else 0f)
                 .build()
             mediaSession.setPlaybackState(playbackState)
         }
+    }
+
+    private fun setMutedInternal(value: Boolean, forceNotify: Boolean = false) {
+        if (!forceNotify && muted == value) return
+        muted = value
+        loopbackAudioEngine.setMuted(value)
+        onMuteStateChanged(value)
     }
 
     companion object {
