@@ -26,6 +26,10 @@ string call_streaming_failed_no_sender
 string grant_permissions
 string hearing_aid_route
 string microphone_permission_rationale
+string notification_pause
+string notification_permission_rationale
+string notification_play
+string notification_stop
 string request_route
 string route_pending
 string speaker_route

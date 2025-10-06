@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.hearingaidstreamer.app-mergeDebugResources-60:/values-it/values-it.xml",
+            "outputFile": "com.example.hearingaidstreamer.app-mergeDebugResources-61:/values-it/values-it.xml",
             "map": [
                 {
                     "source": "/home/mbedu/.gradle/caches/transforms-4/864399426bce3c0f89bd9fb83e49872e/transformed/jetified-material3-release/res/values-it/values-it.xml",
@@ -38,23 +38,6 @@
                     }
                 },
                 {
-                    "source": "/home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/res/values-it/values-it.xml",
-                    "from": {
-                        "startLines": "2,3,4",
-                        "startColumns": "4,4,4",
-                        "startOffsets": "55,151,242",
-                        "endColumns": "95,90,104",
-                        "endOffsets": "146,237,342"
-                    },
-                    "to": {
-                        "startLines": "45,46,47",
-                        "startColumns": "4,4,4",
-                        "startOffsets": "4195,4291,4382",
-                        "endColumns": "95,90,104",
-                        "endOffsets": "4286,4377,4482"
-                    }
-                },
-                {
                     "source": "/home/mbedu/.gradle/caches/transforms-4/c987be8d6226bed5d5704d242ffda8a7/transformed/jetified-foundation-release/res/values-it/values-it.xml",
                     "from": {
                         "startLines": "2,3",
@@ -69,6 +52,23 @@
                         "startOffsets": "18210,18308",
                         "endColumns": "97,98",
                         "endOffsets": "18303,18402"
+                    }
+                },
+                {
+                    "source": "/home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/res/values-it/values-it.xml",
+                    "from": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,151,242",
+                        "endColumns": "95,90,104",
+                        "endOffsets": "146,237,342"
+                    },
+                    "to": {
+                        "startLines": "45,46,47",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "4195,4291,4382",
+                        "endColumns": "95,90,104",
+                        "endOffsets": "4286,4377,4482"
                     }
                 },
                 {

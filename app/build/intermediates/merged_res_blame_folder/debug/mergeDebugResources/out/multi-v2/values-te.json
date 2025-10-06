@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.hearingaidstreamer.app-mergeDebugResources-60:/values-te/values-te.xml",
+            "outputFile": "com.example.hearingaidstreamer.app-mergeDebugResources-61:/values-te/values-te.xml",
             "map": [
                 {
                     "source": "/home/mbedu/.gradle/caches/transforms-4/1bfb95f0db18200d1b2418c3620c7f70/transformed/core-1.13.1/res/values-te/values-te.xml",
@@ -18,6 +18,23 @@
                         "startOffsets": "3530,3632,3740,3842,3943,4049,4156,17930",
                         "endColumns": "101,107,101,100,105,106,123,100",
                         "endOffsets": "3627,3735,3837,3938,4044,4151,4275,18026"
+                    }
+                },
+                {
+                    "source": "/home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/res/values-te/values-te.xml",
+                    "from": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,150,241",
+                        "endColumns": "94,90,108",
+                        "endOffsets": "145,236,345"
+                    },
+                    "to": {
+                        "startLines": "45,46,47",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "4280,4375,4466",
+                        "endColumns": "94,90,108",
+                        "endOffsets": "4370,4461,4570"
                     }
                 },
                 {
@@ -52,23 +69,6 @@
                         "startOffsets": "18294,18382",
                         "endColumns": "87,94",
                         "endOffsets": "18377,18472"
-                    }
-                },
-                {
-                    "source": "/home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/res/values-te/values-te.xml",
-                    "from": {
-                        "startLines": "2,3,4",
-                        "startColumns": "4,4,4",
-                        "startOffsets": "55,150,241",
-                        "endColumns": "94,90,108",
-                        "endOffsets": "145,236,345"
-                    },
-                    "to": {
-                        "startLines": "45,46,47",
-                        "startColumns": "4,4,4",
-                        "startOffsets": "4280,4375,4466",
-                        "endColumns": "94,90,108",
-                        "endOffsets": "4370,4461,4570"
                     }
                 },
                 {

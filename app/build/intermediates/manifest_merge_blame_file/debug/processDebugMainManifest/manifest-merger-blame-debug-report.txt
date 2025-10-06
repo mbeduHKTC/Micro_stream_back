@@ -95,32 +95,32 @@
 52
 53        <!-- MuteStateReceiver is needed on sdk 33 and lower to echo global mute state changes -->
 54        <receiver
-54-->[androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:33:9-39:20
+54-->[androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:33:9-39:20
 55            android:name="androidx.core.telecom.internal.MuteStateReceiver"
-55-->[androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:34:13-76
+55-->[androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:34:13-76
 56            android:exported="true" >
-56-->[androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:35:13-36
+56-->[androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:35:13-36
 57            <intent-filter>
-57-->[androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:36:13-38:29
+57-->[androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:36:13-38:29
 58                <action android:name="android.media.action.MICROPHONE_MUTE_CHANGED" />
-58-->[androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:37:17-87
-58-->[androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:37:25-84
+58-->[androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:37:17-87
+58-->[androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:37:25-84
 59            </intent-filter>
 60        </receiver>
 61
 62        <service
-62-->[androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:41:9-48:19
+62-->[androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:41:9-48:19
 63            android:name="androidx.core.telecom.internal.JetpackConnectionService"
-63-->[androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:42:13-83
+63-->[androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:42:13-83
 64            android:exported="true"
-64-->[androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:43:13-36
+64-->[androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:43:13-36
 65            android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE" >
-65-->[androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:44:13-84
+65-->[androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:44:13-84
 66            <intent-filter>
-66-->[androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:45:13-47:29
+66-->[androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:45:13-47:29
 67                <action android:name="android.telecom.ConnectionService" />
-67-->[androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:46:17-76
-67-->[androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:46:25-73
+67-->[androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:46:17-76
+67-->[androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:46:25-73
 68            </intent-filter>
 69        </service>
 70

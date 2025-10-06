@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.hearingaidstreamer.app-mergeDebugResources-60:/values-large-v4/values-large-v4.xml",
+            "outputFile": "com.example.hearingaidstreamer.app-mergeDebugResources-61:/values-large-v4/values-large-v4.xml",
             "map": [
                 {
                     "source": "/home/mbedu/.gradle/caches/transforms-4/114be1d92056cb420d3c47e7d10b8647/transformed/appcompat-1.6.1/res/values-large-v4/values-large-v4.xml",

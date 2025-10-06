@@ -1,8 +1,25 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.hearingaidstreamer.app-mergeDebugResources-60:/values-mr/values-mr.xml",
+            "outputFile": "com.example.hearingaidstreamer.app-mergeDebugResources-61:/values-mr/values-mr.xml",
             "map": [
+                {
+                    "source": "/home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/res/values-mr/values-mr.xml",
+                    "from": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,147,237",
+                        "endColumns": "91,89,102",
+                        "endOffsets": "142,232,335"
+                    },
+                    "to": {
+                        "startLines": "45,46,47",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "4163,4255,4345",
+                        "endColumns": "91,89,102",
+                        "endOffsets": "4250,4340,4443"
+                    }
+                },
                 {
                     "source": "/home/mbedu/.gradle/caches/transforms-4/b5c1820d57b9cef25ae43c259a95a94f/transformed/material-1.12.0/res/values-mr/values-mr.xml",
                     "from": {
@@ -88,23 +105,6 @@
                         "startOffsets": "5710,5835,5958,6069,6194,6297,6397,6512,6648,6771,6917,7002,7108,7199,7297,7411,7541,7652,7787,7921,8049,8227,8352,8468,8587,8712,8804,8899,9019,9148,9248,9351,9460,9597,9739,9854,9952,10028,10131,10235,10320,10410,10510,10590,10673,10772,10871,10968,11067,11154,11258,11358,11462,11580,11660,11760",
                         "endColumns": "124,122,110,124,102,99,114,135,122,145,84,105,90,97,113,129,110,134,133,127,177,124,115,118,124,91,94,119,128,99,102,108,136,141,114,97,75,102,103,84,89,99,79,82,98,98,96,98,86,103,99,103,117,79,99,93",
                         "endOffsets": "5830,5953,6064,6189,6292,6392,6507,6643,6766,6912,6997,7103,7194,7292,7406,7536,7647,7782,7916,8044,8222,8347,8463,8582,8707,8799,8894,9014,9143,9243,9346,9455,9592,9734,9849,9947,10023,10126,10230,10315,10405,10505,10585,10668,10767,10866,10963,11062,11149,11253,11353,11457,11575,11655,11755,11849"
-                    }
-                },
-                {
-                    "source": "/home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/res/values-mr/values-mr.xml",
-                    "from": {
-                        "startLines": "2,3,4",
-                        "startColumns": "4,4,4",
-                        "startOffsets": "55,147,237",
-                        "endColumns": "91,89,102",
-                        "endOffsets": "142,232,335"
-                    },
-                    "to": {
-                        "startLines": "45,46,47",
-                        "startColumns": "4,4,4",
-                        "startOffsets": "4163,4255,4345",
-                        "endColumns": "91,89,102",
-                        "endOffsets": "4250,4340,4443"
                     }
                 },
                 {

@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.hearingaidstreamer.app-mergeDebugResources-60:/values-pl/values-pl.xml",
+            "outputFile": "com.example.hearingaidstreamer.app-mergeDebugResources-61:/values-pl/values-pl.xml",
             "map": [
                 {
                     "source": "/home/mbedu/.gradle/caches/transforms-4/2ec92fdb76fed467dcd0aaa79600d63e/transformed/jetified-ui-release/res/values-pl/values-pl.xml",
@@ -91,7 +91,7 @@
                     }
                 },
                 {
-                    "source": "/home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/res/values-pl/values-pl.xml",
+                    "source": "/home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/res/values-pl/values-pl.xml",
                     "from": {
                         "startLines": "2,3,4",
                         "startColumns": "4,4,4",

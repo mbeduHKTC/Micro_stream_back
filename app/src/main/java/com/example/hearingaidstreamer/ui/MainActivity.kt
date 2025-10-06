@@ -60,6 +60,9 @@ class MainActivity : ComponentActivity() {
                                 add(Manifest.permission.BLUETOOTH_CONNECT)
                                 add(Manifest.permission.BLUETOOTH_SCAN)
                             }
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                add(Manifest.permission.POST_NOTIFICATIONS)
+                            }
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                                 add(Manifest.permission.MANAGE_OWN_CALLS)
                             }
@@ -146,12 +149,24 @@ private fun MainScreen(
             }
 
             if (missingPermissions.isNotEmpty()) {
+                val rationales = missingPermissions.map { permission ->
+                    when (permission) {
+                        Manifest.permission.RECORD_AUDIO -> context.getString(com.example.hearingaidstreamer.R.string.microphone_permission_rationale)
+                        Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN -> context.getString(com.example.hearingaidstreamer.R.string.bluetooth_permission_rationale)
+                        Manifest.permission.MANAGE_OWN_CALLS -> context.getString(com.example.hearingaidstreamer.R.string.call_permission_rationale)
+                        Manifest.permission.POST_NOTIFICATIONS -> context.getString(com.example.hearingaidstreamer.R.string.notification_permission_rationale)
+                        else -> null
+                    }
+                }.filterNotNull().distinct()
+
                 Card(modifier = Modifier.padding(vertical = 8.dp)) {
                     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(
-                            text = context.getString(com.example.hearingaidstreamer.R.string.microphone_permission_rationale),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
+                        rationales.forEach { rationale ->
+                            Text(
+                                text = rationale,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
                         Button(onClick = onRequestPermissions) {
                             Text(text = context.getString(com.example.hearingaidstreamer.R.string.grant_permissions))
                         }

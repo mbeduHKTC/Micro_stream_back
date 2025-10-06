@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.hearingaidstreamer.app-mergeDebugResources-60:/values-zh-rCN/values-zh-rCN.xml",
+            "outputFile": "com.example.hearingaidstreamer.app-mergeDebugResources-61:/values-zh-rCN/values-zh-rCN.xml",
             "map": [
                 {
                     "source": "/home/mbedu/.gradle/caches/transforms-4/2ec92fdb76fed467dcd0aaa79600d63e/transformed/jetified-ui-release/res/values-zh-rCN/values-zh-rCN.xml",
@@ -35,23 +35,6 @@
                         "startOffsets": "3197,3289,3390,3484,3578,3671,3765,15614",
                         "endColumns": "91,100,93,93,92,93,95,100",
                         "endOffsets": "3284,3385,3479,3573,3666,3760,3856,15710"
-                    }
-                },
-                {
-                    "source": "/home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/res/values-zh-rCN/values-zh-rCN.xml",
-                    "from": {
-                        "startLines": "2,3,4",
-                        "startColumns": "4,4,4",
-                        "startOffsets": "55,145,232",
-                        "endColumns": "89,86,96",
-                        "endOffsets": "140,227,324"
-                    },
-                    "to": {
-                        "startLines": "45,46,47",
-                        "startColumns": "4,4,4",
-                        "startOffsets": "3861,3951,4038",
-                        "endColumns": "89,86,96",
-                        "endOffsets": "3946,4033,4130"
                     }
                 },
                 {
@@ -122,6 +105,23 @@
                         "startOffsets": "15970,16051",
                         "endColumns": "80,76",
                         "endOffsets": "16046,16123"
+                    }
+                },
+                {
+                    "source": "/home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/res/values-zh-rCN/values-zh-rCN.xml",
+                    "from": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,145,232",
+                        "endColumns": "89,86,96",
+                        "endOffsets": "140,227,324"
+                    },
+                    "to": {
+                        "startLines": "45,46,47",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "3861,3951,4038",
+                        "endColumns": "89,86,96",
+                        "endOffsets": "3946,4033,4130"
                     }
                 }
             ]

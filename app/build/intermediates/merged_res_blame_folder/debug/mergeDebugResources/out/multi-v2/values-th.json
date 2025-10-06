@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.hearingaidstreamer.app-mergeDebugResources-60:/values-th/values-th.xml",
+            "outputFile": "com.example.hearingaidstreamer.app-mergeDebugResources-61:/values-th/values-th.xml",
             "map": [
                 {
                     "source": "/home/mbedu/.gradle/caches/transforms-4/114be1d92056cb420d3c47e7d10b8647/transformed/appcompat-1.6.1/res/values-th/values-th.xml",
@@ -35,23 +35,6 @@
                         "startOffsets": "17487,17584",
                         "endColumns": "96,94",
                         "endOffsets": "17579,17674"
-                    }
-                },
-                {
-                    "source": "/home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/res/values-th/values-th.xml",
-                    "from": {
-                        "startLines": "2,3,4",
-                        "startColumns": "4,4,4",
-                        "startOffsets": "55,154,243",
-                        "endColumns": "98,88,105",
-                        "endOffsets": "149,238,344"
-                    },
-                    "to": {
-                        "startLines": "45,46,47",
-                        "startColumns": "4,4,4",
-                        "startOffsets": "4078,4177,4266",
-                        "endColumns": "98,88,105",
-                        "endOffsets": "4172,4261,4367"
                     }
                 },
                 {
@@ -122,6 +105,23 @@
                         "startOffsets": "3363,3459,3562,3660,3758,3861,3966,17118",
                         "endColumns": "95,102,97,97,102,104,111,100",
                         "endOffsets": "3454,3557,3655,3753,3856,3961,4073,17214"
+                    }
+                },
+                {
+                    "source": "/home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/res/values-th/values-th.xml",
+                    "from": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,154,243",
+                        "endColumns": "98,88,105",
+                        "endOffsets": "149,238,344"
+                    },
+                    "to": {
+                        "startLines": "45,46,47",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "4078,4177,4266",
+                        "endColumns": "98,88,105",
+                        "endOffsets": "4172,4261,4367"
                     }
                 }
             ]

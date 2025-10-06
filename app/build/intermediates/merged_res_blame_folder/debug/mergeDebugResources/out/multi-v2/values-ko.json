@@ -1,25 +1,8 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.hearingaidstreamer.app-mergeDebugResources-60:/values-ko/values-ko.xml",
+            "outputFile": "com.example.hearingaidstreamer.app-mergeDebugResources-61:/values-ko/values-ko.xml",
             "map": [
-                {
-                    "source": "/home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/res/values-ko/values-ko.xml",
-                    "from": {
-                        "startLines": "2,3,4",
-                        "startColumns": "4,4,4",
-                        "startOffsets": "55,144,231",
-                        "endColumns": "88,86,95",
-                        "endOffsets": "139,226,322"
-                    },
-                    "to": {
-                        "startLines": "45,46,47",
-                        "startColumns": "4,4,4",
-                        "startOffsets": "3907,3996,4083",
-                        "endColumns": "88,86,95",
-                        "endOffsets": "3991,4078,4174"
-                    }
-                },
                 {
                     "source": "/home/mbedu/.gradle/caches/transforms-4/864399426bce3c0f89bd9fb83e49872e/transformed/jetified-material3-release/res/values-ko/values-ko.xml",
                     "from": {
@@ -122,6 +105,23 @@
                         "startOffsets": "299,396,490,591,673,771,877,957,1032,1123,1216,1311,1405,1505,1598,1693,1787,1878,1969,2049,2147,2241,2336,2436,2533,2633,2785,15502",
                         "endColumns": "96,93,100,81,97,105,79,74,90,92,94,93,99,92,94,93,90,90,79,97,93,94,99,96,99,151,93,78",
                         "endOffsets": "391,485,586,668,766,872,952,1027,1118,1211,1306,1400,1500,1593,1688,1782,1873,1964,2044,2142,2236,2331,2431,2528,2628,2780,2874,15576"
+                    }
+                },
+                {
+                    "source": "/home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/res/values-ko/values-ko.xml",
+                    "from": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,144,231",
+                        "endColumns": "88,86,95",
+                        "endOffsets": "139,226,322"
+                    },
+                    "to": {
+                        "startLines": "45,46,47",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "3907,3996,4083",
+                        "endColumns": "88,86,95",
+                        "endOffsets": "3991,4078,4174"
                     }
                 }
             ]

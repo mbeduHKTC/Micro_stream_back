@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.hearingaidstreamer.app-mergeDebugResources-60:/values-v23/values-v23.xml",
+            "outputFile": "com.example.hearingaidstreamer.app-mergeDebugResources-61:/values-v23/values-v23.xml",
             "map": [
                 {
                     "source": "/home/mbedu/.gradle/caches/transforms-4/eda4e971e151ab9d1632954b7f08ece2/transformed/cardview-1.0.0/res/values-v23/values-v23.xml",

@@ -6,10 +6,13 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
+import androidx.media.app.NotificationCompat as MediaNotificationCompat
 import androidx.media.session.MediaButtonReceiver
 import com.example.hearingaidstreamer.R
 import com.example.hearingaidstreamer.ui.MainActivity
@@ -25,7 +28,12 @@ class StreamNotificationManager(private val context: Context) {
         ensureChannel()
     }
 
-    fun show(mediaSessionToken: android.media.session.MediaSession.Token, isPlaying: Boolean) {
+    fun show(mediaSessionToken: MediaSessionCompat.Token, isPlaying: Boolean) {
+        if (!notificationManager.areNotificationsEnabled()) {
+            Log.w(TAG, "Notifications disabled; skipping media notification")
+            return
+        }
+
         val contentIntent = TaskStackBuilder.create(context).run {
             addNextIntent(Intent(context, MainActivity::class.java))
             getPendingIntent(REQUEST_CODE_CONTENT, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
@@ -51,7 +59,7 @@ class StreamNotificationManager(private val context: Context) {
             MediaButtonReceiver.buildMediaButtonPendingIntent(context, PlaybackStateCompat.ACTION_STOP)
         )
 
-        val style = androidx.media.app.NotificationCompat.MediaStyle()
+        val style = MediaNotificationCompat.MediaStyle()
             .setMediaSession(mediaSessionToken)
             .setShowActionsInCompactView(0, 1)
 
@@ -76,6 +84,8 @@ class StreamNotificationManager(private val context: Context) {
         notificationManager.cancel(NOTIFICATION_ID)
     }
 
+    fun areEnabled(): Boolean = notificationManager.areNotificationsEnabled()
+
     private fun ensureChannel() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
         val channel = NotificationChannel(
@@ -90,6 +100,7 @@ class StreamNotificationManager(private val context: Context) {
     }
 
     companion object {
+        private const val TAG = "StreamNotification"
         private const val CHANNEL_ID = "stream_media_channel"
         private const val NOTIFICATION_ID = 0x534d
         private const val REQUEST_CODE_CONTENT = 0x100

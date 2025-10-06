@@ -9,6 +9,7 @@ import android.media.AudioManager
 import android.media.MediaMetadata
 import android.media.session.MediaSession
 import android.media.session.PlaybackState
+import android.support.v4.media.session.MediaSessionCompat
 import android.util.Log
 import androidx.core.app.TaskStackBuilder
 import com.example.hearingaidstreamer.R
@@ -20,8 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- * Wraps a [MediaSession] and audio focus handling so the loopback stream integrates with
- * the system media controls (notifications, wearables, automotive UIs, etc.).
+ * Manages a platform [MediaSession] so the loopback stream integrates with system media controls.
  */
 class StreamMediaSessionController(
     private val context: Context,
@@ -50,12 +50,12 @@ class StreamMediaSessionController(
 
     private val mediaSession: MediaSession = MediaSession(context, SESSION_TAG).apply {
         setFlags(MediaSession.FLAG_HANDLES_MEDIA_BUTTONS or MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS)
+        setPlaybackToLocal(playbackAttributes)
         val sessionActivity = TaskStackBuilder.create(context).run {
             addNextIntent(Intent(context, MainActivity::class.java))
             getPendingIntent(REQUEST_CODE_SESSION_ACTIVITY, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         }
         setSessionActivity(sessionActivity)
-        setPlaybackToLocal(playbackAttributes)
         setMetadata(
             MediaMetadata.Builder()
                 .putString(MediaMetadata.METADATA_KEY_TITLE, context.getString(R.string.app_name))
@@ -83,6 +83,9 @@ class StreamMediaSessionController(
         )
     }
 
+    private val compatToken: MediaSessionCompat.Token
+        get() = MediaSessionCompat.Token.fromToken(mediaSession.sessionToken)
+
     private suspend fun requestFocus(): Boolean {
         val manager = audioManager ?: return true
         return withContext(Dispatchers.Main) {
@@ -108,14 +111,14 @@ class StreamMediaSessionController(
             mediaSession.isActive = true
         }
         updatePlaybackState(PlaybackState.STATE_PLAYING)
-        notificationManager.show(mediaSession.sessionToken, isPlaying = true)
+        notificationManager.show(compatToken, isPlaying = true)
         return granted
     }
 
     suspend fun pause() {
         loopbackAudioEngine.stop()
         updatePlaybackState(PlaybackState.STATE_PAUSED)
-        notificationManager.show(mediaSession.sessionToken, isPlaying = false)
+        notificationManager.show(compatToken, isPlaying = false)
         abandonFocus()
     }
 

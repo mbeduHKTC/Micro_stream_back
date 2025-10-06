@@ -25,6 +25,7 @@
     <string name="call_ending">Tearing down stream…</string>
     <string name="call_error_prefix">Stream error: %1$s</string>
     <string name="grant_permissions">Grant required permissions</string>
+    <string name="notification_permission_rationale">Enable notifications so the stream stays visible in system controls.</string>
     <string name="notification_play">Play</string>
     <string name="notification_pause">Pause</string>
     <string name="notification_stop">Stop</string>

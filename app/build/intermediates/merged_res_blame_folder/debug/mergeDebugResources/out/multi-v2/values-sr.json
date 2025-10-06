@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.hearingaidstreamer.app-mergeDebugResources-60:/values-sr/values-sr.xml",
+            "outputFile": "com.example.hearingaidstreamer.app-mergeDebugResources-61:/values-sr/values-sr.xml",
             "map": [
                 {
                     "source": "/home/mbedu/.gradle/caches/transforms-4/864399426bce3c0f89bd9fb83e49872e/transformed/jetified-material3-release/res/values-sr/values-sr.xml",
@@ -91,6 +91,23 @@
                     }
                 },
                 {
+                    "source": "/home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/res/values-sr/values-sr.xml",
+                    "from": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,150,241",
+                        "endColumns": "94,90,105",
+                        "endOffsets": "145,236,342"
+                    },
+                    "to": {
+                        "startLines": "46,47,48",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "4257,4352,4443",
+                        "endColumns": "94,90,105",
+                        "endOffsets": "4347,4438,4544"
+                    }
+                },
+                {
                     "source": "/home/mbedu/.gradle/caches/transforms-4/1bfb95f0db18200d1b2418c3620c7f70/transformed/core-1.13.1/res/values-sr/values-sr.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
@@ -105,23 +122,6 @@
                         "startOffsets": "3531,3629,3731,3828,3932,4036,4141,17589",
                         "endColumns": "97,101,96,103,103,104,115,100",
                         "endOffsets": "3624,3726,3823,3927,4031,4136,4252,17685"
-                    }
-                },
-                {
-                    "source": "/home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/res/values-sr/values-sr.xml",
-                    "from": {
-                        "startLines": "2,3,4",
-                        "startColumns": "4,4,4",
-                        "startOffsets": "55,150,241",
-                        "endColumns": "94,90,105",
-                        "endOffsets": "145,236,342"
-                    },
-                    "to": {
-                        "startLines": "46,47,48",
-                        "startColumns": "4,4,4",
-                        "startOffsets": "4257,4352,4443",
-                        "endColumns": "94,90,105",
-                        "endOffsets": "4347,4438,4544"
                     }
                 }
             ]

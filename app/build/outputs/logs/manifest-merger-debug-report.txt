@@ -5,7 +5,8 @@ INJECTED from /home/mbedu/steto_app/steto/Micro_stream_back/app/src/main/Android
 INJECTED from /home/mbedu/steto_app/steto/Micro_stream_back/app/src/main/AndroidManifest.xml:2:1-37:12
 INJECTED from /home/mbedu/steto_app/steto/Micro_stream_back/app/src/main/AndroidManifest.xml:2:1-37:12
 MERGED from [com.google.android.material:material:1.12.0] /home/mbedu/.gradle/caches/transforms-4/b5c1820d57b9cef25ae43c259a95a94f/transformed/material-1.12.0/AndroidManifest.xml:17:1-24:12
-MERGED from [androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:17:1-51:12
+MERGED from [androidx.media:media:1.7.0] /home/mbedu/.gradle/caches/transforms-4/a8992d2a39c252de27a8f2dd65245f49/transformed/media-1.7.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:17:1-51:12
 MERGED from [androidx.constraintlayout:constraintlayout:2.0.1] /home/mbedu/.gradle/caches/transforms-4/2172d45a5bbcbe7edd2da0ef9175e08e/transformed/constraintlayout-2.0.1/AndroidManifest.xml:2:1-11:12
 MERGED from [androidx.appcompat:appcompat-resources:1.6.1] /home/mbedu/.gradle/caches/transforms-4/743178171ec0a17a2b90c47c06b14e70/transformed/jetified-appcompat-resources-1.6.1/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.appcompat:appcompat:1.6.1] /home/mbedu/.gradle/caches/transforms-4/114be1d92056cb420d3c47e7d10b8647/transformed/appcompat-1.6.1/AndroidManifest.xml:17:1-22:12
@@ -92,14 +93,14 @@ ADDED from /home/mbedu/steto_app/steto/Micro_stream_back/app/src/main/AndroidMan
 		ADDED from /home/mbedu/steto_app/steto/Micro_stream_back/app/src/main/AndroidManifest.xml:4:22-68
 uses-permission#android.permission.MODIFY_AUDIO_SETTINGS
 ADDED from /home/mbedu/steto_app/steto/Micro_stream_back/app/src/main/AndroidManifest.xml:5:5-80
-MERGED from [androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:28:5-80
-MERGED from [androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:28:5-80
+MERGED from [androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:28:5-80
+MERGED from [androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:28:5-80
 	android:name
 		ADDED from /home/mbedu/steto_app/steto/Micro_stream_back/app/src/main/AndroidManifest.xml:5:22-77
 uses-permission#android.permission.BLUETOOTH_CONNECT
 ADDED from /home/mbedu/steto_app/steto/Micro_stream_back/app/src/main/AndroidManifest.xml:6:5-76
-MERGED from [androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:22:5-76
-MERGED from [androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:22:5-76
+MERGED from [androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:22:5-76
+MERGED from [androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:22:5-76
 	android:name
 		ADDED from /home/mbedu/steto_app/steto/Micro_stream_back/app/src/main/AndroidManifest.xml:6:22-73
 uses-permission#android.permission.BLUETOOTH_SCAN
@@ -122,8 +123,8 @@ ADDED from /home/mbedu/steto_app/steto/Micro_stream_back/app/src/main/AndroidMan
 		ADDED from /home/mbedu/steto_app/steto/Micro_stream_back/app/src/main/AndroidManifest.xml:10:22-74
 uses-permission#android.permission.MANAGE_OWN_CALLS
 ADDED from /home/mbedu/steto_app/steto/Micro_stream_back/app/src/main/AndroidManifest.xml:11:5-75
-MERGED from [androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:23:5-75
-MERGED from [androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:23:5-75
+MERGED from [androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:23:5-75
+MERGED from [androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:23:5-75
 	android:name
 		ADDED from /home/mbedu/steto_app/steto/Micro_stream_back/app/src/main/AndroidManifest.xml:11:22-72
 uses-permission#android.permission.CALL_PHONE
@@ -135,8 +136,8 @@ ADDED from /home/mbedu/steto_app/steto/Micro_stream_back/app/src/main/AndroidMan
 INJECTED from /home/mbedu/steto_app/steto/Micro_stream_back/app/src/main/AndroidManifest.xml:14:5-35:19
 MERGED from [com.google.android.material:material:1.12.0] /home/mbedu/.gradle/caches/transforms-4/b5c1820d57b9cef25ae43c259a95a94f/transformed/material-1.12.0/AndroidManifest.xml:22:5-20
 MERGED from [com.google.android.material:material:1.12.0] /home/mbedu/.gradle/caches/transforms-4/b5c1820d57b9cef25ae43c259a95a94f/transformed/material-1.12.0/AndroidManifest.xml:22:5-20
-MERGED from [androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:30:5-49:19
-MERGED from [androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:30:5-49:19
+MERGED from [androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:30:5-49:19
+MERGED from [androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:30:5-49:19
 MERGED from [androidx.constraintlayout:constraintlayout:2.0.1] /home/mbedu/.gradle/caches/transforms-4/2172d45a5bbcbe7edd2da0ef9175e08e/transformed/constraintlayout-2.0.1/AndroidManifest.xml:9:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.0.1] /home/mbedu/.gradle/caches/transforms-4/2172d45a5bbcbe7edd2da0ef9175e08e/transformed/constraintlayout-2.0.1/AndroidManifest.xml:9:5-20
 MERGED from [androidx.compose.ui:ui-tooling-android:1.6.8] /home/mbedu/.gradle/caches/transforms-4/303ace3a1875fdd66c6e1bcbb67c1194/transformed/jetified-ui-tooling-release/AndroidManifest.xml:22:5-26:19
@@ -199,8 +200,10 @@ INJECTED from /home/mbedu/steto_app/steto/Micro_stream_back/app/src/main/Android
 INJECTED from /home/mbedu/steto_app/steto/Micro_stream_back/app/src/main/AndroidManifest.xml
 MERGED from [com.google.android.material:material:1.12.0] /home/mbedu/.gradle/caches/transforms-4/b5c1820d57b9cef25ae43c259a95a94f/transformed/material-1.12.0/AndroidManifest.xml:20:5-44
 MERGED from [com.google.android.material:material:1.12.0] /home/mbedu/.gradle/caches/transforms-4/b5c1820d57b9cef25ae43c259a95a94f/transformed/material-1.12.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:20:5-44
-MERGED from [androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media:media:1.7.0] /home/mbedu/.gradle/caches/transforms-4/a8992d2a39c252de27a8f2dd65245f49/transformed/media-1.7.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.media:media:1.7.0] /home/mbedu/.gradle/caches/transforms-4/a8992d2a39c252de27a8f2dd65245f49/transformed/media-1.7.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:20:5-44
 MERGED from [androidx.constraintlayout:constraintlayout:2.0.1] /home/mbedu/.gradle/caches/transforms-4/2172d45a5bbcbe7edd2da0ef9175e08e/transformed/constraintlayout-2.0.1/AndroidManifest.xml:5:5-7:41
 MERGED from [androidx.constraintlayout:constraintlayout:2.0.1] /home/mbedu/.gradle/caches/transforms-4/2172d45a5bbcbe7edd2da0ef9175e08e/transformed/constraintlayout-2.0.1/AndroidManifest.xml:5:5-7:41
 MERGED from [androidx.appcompat:appcompat-resources:1.6.1] /home/mbedu/.gradle/caches/transforms-4/743178171ec0a17a2b90c47c06b14e70/transformed/jetified-appcompat-resources-1.6.1/AndroidManifest.xml:20:5-44
@@ -350,31 +353,31 @@ MERGED from [androidx.arch.core:core-runtime:2.2.0] /home/mbedu/.gradle/caches/t
 	android:minSdkVersion
 		INJECTED from /home/mbedu/steto_app/steto/Micro_stream_back/app/src/main/AndroidManifest.xml
 receiver#androidx.core.telecom.internal.MuteStateReceiver
-ADDED from [androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:33:9-39:20
+ADDED from [androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:33:9-39:20
 	android:exported
-		ADDED from [androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:35:13-36
+		ADDED from [androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:35:13-36
 	android:name
-		ADDED from [androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:34:13-76
+		ADDED from [androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:34:13-76
 intent-filter#action:name:android.media.action.MICROPHONE_MUTE_CHANGED
-ADDED from [androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:36:13-38:29
+ADDED from [androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:36:13-38:29
 action#android.media.action.MICROPHONE_MUTE_CHANGED
-ADDED from [androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:37:17-87
+ADDED from [androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:37:17-87
 	android:name
-		ADDED from [androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:37:25-84
+		ADDED from [androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:37:25-84
 service#androidx.core.telecom.internal.JetpackConnectionService
-ADDED from [androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:41:9-48:19
+ADDED from [androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:41:9-48:19
 	android:exported
-		ADDED from [androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:43:13-36
+		ADDED from [androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:43:13-36
 	android:permission
-		ADDED from [androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:44:13-84
+		ADDED from [androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:44:13-84
 	android:name
-		ADDED from [androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:42:13-83
+		ADDED from [androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:42:13-83
 intent-filter#action:name:android.telecom.ConnectionService
-ADDED from [androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:45:13-47:29
+ADDED from [androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:45:13-47:29
 action#android.telecom.ConnectionService
-ADDED from [androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:46:17-76
+ADDED from [androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:46:17-76
 	android:name
-		ADDED from [androidx.core:core-telecom:1.0.1] /home/mbedu/.gradle/caches/transforms-4/1975701416ed222fefe5b2fb8980586d/transformed/jetified-core-telecom-1.0.1/AndroidManifest.xml:46:25-73
+		ADDED from [androidx.core:core-telecom:1.0.0-beta01] /home/mbedu/.gradle/caches/transforms-4/1d0ba294997079971309069e45b302c5/transformed/jetified-core-telecom-1.0.0-beta01/AndroidManifest.xml:46:25-73
 activity#androidx.compose.ui.tooling.PreviewActivity
 ADDED from [androidx.compose.ui:ui-tooling-android:1.6.8] /home/mbedu/.gradle/caches/transforms-4/303ace3a1875fdd66c6e1bcbb67c1194/transformed/jetified-ui-tooling-release/AndroidManifest.xml:23:9-25:39
 	android:exported
