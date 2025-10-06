@@ -1965,6 +1965,14 @@
     <string description="Content description for an icon that appears in the title area of a dialog" name="icon_content_description">Dialog Icon</string>
     <string name="in_progress">In progress</string>
     <string name="indeterminate">Partially checked</string>
+    <string name="input_device_bluetooth">Bluetooth microphone</string>
+    <string name="input_device_builtin">Built-in microphone</string>
+    <string name="input_device_combined_label">%1$s (%2$s)</string>
+    <string name="input_device_default">System default</string>
+    <string name="input_device_other">Audio device</string>
+    <string name="input_device_title">Input device</string>
+    <string name="input_device_usb">USB microphone</string>
+    <string name="input_device_wired">Wired headset mic</string>
     <string name="item_view_role_description">Tab</string>
     <string name="m3_exceed_max_badge_text_suffix" translatable="false"><ns2:g example="Some te" id="part of a long text">%1$s</ns2:g><ns2:g example="…" id="suffix">%2$s</ns2:g></string>
     <string name="m3_ref_typeface_brand_medium" translatable="false">sans-serif-medium</string>

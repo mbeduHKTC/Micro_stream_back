@@ -1,7 +1,12 @@
 package com.example.hearingaidstreamer.ui
 
 import android.content.Context
+import android.media.AudioDeviceCallback
+import android.media.AudioDeviceInfo
+import android.media.AudioManager
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.telecom.CallEndpoint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -21,6 +26,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+data class InputDeviceOption(val id: Int, val label: String)
+
 class MainViewModel(private val appContext: Context) : ViewModel() {
 
     private val audioEngine = LoopbackAudioEngine()
@@ -39,6 +46,14 @@ class MainViewModel(private val appContext: Context) : ViewModel() {
 
     private val _isMuted = MutableStateFlow(false)
     val isMuted: StateFlow<Boolean> = _isMuted.asStateFlow()
+
+    private val audioManager: AudioManager? = appContext.getSystemService(AudioManager::class.java)
+
+    private val _inputDevices = MutableStateFlow<List<InputDeviceOption>>(emptyList())
+    val inputDevices: StateFlow<List<InputDeviceOption>> = _inputDevices.asStateFlow()
+
+    private val _selectedInputDeviceId = MutableStateFlow<Int?>(null)
+    val selectedInputDeviceId: StateFlow<Int?> = _selectedInputDeviceId.asStateFlow()
 
     private val amplitudeHistory = ArrayDeque<Float>()
     private val _waveform = MutableStateFlow<List<Float>>(emptyList())
@@ -87,6 +102,10 @@ class MainViewModel(private val appContext: Context) : ViewModel() {
             )
         }
 
+        audioEngine.setPreferredInputDeviceProvider { resolvePreferredInputDevice() }
+        refreshInputDevices()
+        registerDeviceCallback()
+
         viewModelScope.launch {
             audioEngine.envelopeFlow.collect { value ->
                 appendAmplitude(value)
@@ -121,6 +140,11 @@ class MainViewModel(private val appContext: Context) : ViewModel() {
         audioEngine.updateSettings { current -> current.copy(mainsFrequencyHz = frequency) }
     }
 
+    fun onInputDeviceSelected(deviceId: Int?) {
+        _selectedInputDeviceId.value = deviceId
+        audioEngine.setPreferredInputDeviceProvider { resolvePreferredInputDevice() }
+    }
+
     fun toggleMute() {
         val target = !_isMuted.value
         viewModelScope.launch {
@@ -133,6 +157,7 @@ class MainViewModel(private val appContext: Context) : ViewModel() {
         mediaController?.let { controller ->
             viewModelScope.launch { controller.release() }
         }
+        unregisterDeviceCallback()
         super.onCleared()
     }
 
@@ -143,6 +168,76 @@ class MainViewModel(private val appContext: Context) : ViewModel() {
             amplitudeHistory.removeFirst()
         }
         _waveform.value = amplitudeHistory.toList()
+    }
+
+    private fun registerDeviceCallback() {
+        val manager = audioManager ?: return
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            manager.registerAudioDeviceCallback(audioDeviceCallback, Handler(Looper.getMainLooper()))
+        }
+    }
+
+    private fun unregisterDeviceCallback() {
+        val manager = audioManager ?: return
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            manager.unregisterAudioDeviceCallback(audioDeviceCallback)
+        }
+    }
+
+    private fun refreshInputDevices() {
+        val manager = audioManager ?: return
+        val devices = manager.getDevices(AudioManager.GET_DEVICES_INPUTS)
+            .filter { it.isSource }
+            .map { device ->
+                InputDeviceOption(
+                    id = device.id,
+                    label = formatDeviceLabel(device)
+                )
+            }
+            .sortedBy { it.label.lowercase(Locale.getDefault()) }
+
+        _inputDevices.value = devices
+        val currentId = _selectedInputDeviceId.value
+        if (currentId != null && devices.none { it.id == currentId }) {
+            _selectedInputDeviceId.value = null
+        }
+    }
+
+    private fun resolvePreferredInputDevice(): AudioDeviceInfo? {
+        val manager = audioManager ?: return null
+        val targetId = _selectedInputDeviceId.value ?: return null
+        return manager.getDevices(AudioManager.GET_DEVICES_INPUTS).firstOrNull { it.id == targetId }
+    }
+
+    private fun formatDeviceLabel(device: AudioDeviceInfo): String {
+        val productName = device.productName?.toString()?.takeIf { it.isNotBlank() }
+        val typeLabel = when (device.type) {
+            AudioDeviceInfo.TYPE_BUILTIN_MIC -> appContext.getString(R.string.input_device_builtin)
+            AudioDeviceInfo.TYPE_BLE_HEADSET,
+            AudioDeviceInfo.TYPE_BLUETOOTH_A2DP,
+            AudioDeviceInfo.TYPE_BLUETOOTH_SCO -> appContext.getString(R.string.input_device_bluetooth)
+            AudioDeviceInfo.TYPE_USB_DEVICE,
+            AudioDeviceInfo.TYPE_USB_HEADSET -> appContext.getString(R.string.input_device_usb)
+            AudioDeviceInfo.TYPE_WIRED_HEADSET,
+            AudioDeviceInfo.TYPE_WIRED_HEADPHONES -> appContext.getString(R.string.input_device_wired)
+            else -> appContext.getString(R.string.input_device_other)
+        }
+
+        return when {
+            productName == null -> typeLabel
+            productName.equals(typeLabel, ignoreCase = true) -> productName
+            else -> appContext.getString(R.string.input_device_combined_label, productName, typeLabel)
+        }
+    }
+
+    private val audioDeviceCallback = object : AudioDeviceCallback() {
+        override fun onAudioDevicesAdded(addedDevices: Array<out AudioDeviceInfo>) {
+            refreshInputDevices()
+        }
+
+        override fun onAudioDevicesRemoved(removedDevices: Array<out AudioDeviceInfo>) {
+            refreshInputDevices()
+        }
     }
 
     companion object {

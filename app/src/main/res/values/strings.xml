@@ -29,4 +29,12 @@
     <string name="notification_pause">Mute</string>
     <string name="mute_stream">Mute audio</string>
     <string name="unmute_stream">Unmute audio</string>
+    <string name="input_device_title">Input device</string>
+    <string name="input_device_default">System default</string>
+    <string name="input_device_builtin">Built-in microphone</string>
+    <string name="input_device_bluetooth">Bluetooth microphone</string>
+    <string name="input_device_usb">USB microphone</string>
+    <string name="input_device_wired">Wired headset mic</string>
+    <string name="input_device_other">Audio device</string>
+    <string name="input_device_combined_label">%1$s (%2$s)</string>
 </resources>

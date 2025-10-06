@@ -24,6 +24,14 @@
     <string name="call_streaming_failed_no_sender">Streaming failed: no streaming service available.</string>
     <string name="grant_permissions">Grant required permissions</string>
     <string name="hearing_aid_route">Hearing Aid</string>
+    <string name="input_device_bluetooth">Bluetooth microphone</string>
+    <string name="input_device_builtin">Built-in microphone</string>
+    <string name="input_device_combined_label">%1$s (%2$s)</string>
+    <string name="input_device_default">System default</string>
+    <string name="input_device_other">Audio device</string>
+    <string name="input_device_title">Input device</string>
+    <string name="input_device_usb">USB microphone</string>
+    <string name="input_device_wired">Wired headset mic</string>
     <string name="microphone_permission_rationale">We need microphone access to stream audio.</string>
     <string name="mute_stream">Mute audio</string>
     <string name="notification_pause">Mute</string>

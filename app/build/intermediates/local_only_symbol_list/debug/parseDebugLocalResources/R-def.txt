@@ -26,6 +26,14 @@ string call_streaming_failed_in_use
 string call_streaming_failed_no_sender
 string grant_permissions
 string hearing_aid_route
+string input_device_bluetooth
+string input_device_builtin
+string input_device_combined_label
+string input_device_default
+string input_device_other
+string input_device_title
+string input_device_usb
+string input_device_wired
 string microphone_permission_rationale
 string mute_stream
 string notification_pause

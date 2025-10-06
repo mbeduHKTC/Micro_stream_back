@@ -1,6 +1,7 @@
 package com.example.hearingaidstreamer.audio
 
 import android.media.AudioAttributes
+import android.media.AudioDeviceInfo
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.AudioTrack
@@ -47,6 +48,8 @@ class LoopbackAudioEngine(
 
     @Volatile
     private var muted: Boolean = false
+
+    private val preferredInputDeviceProvider = AtomicReference<(() -> AudioDeviceInfo?)?>(null)
 
     @Volatile
     private var filtersDirty: Boolean = true
@@ -157,6 +160,12 @@ class LoopbackAudioEngine(
 
     fun isMuted(): Boolean = muted
 
+    fun setPreferredInputDeviceProvider(provider: (() -> AudioDeviceInfo?)?) {
+        preferredInputDeviceProvider.set(provider)
+        val preferredDevice = provider?.invoke()
+        audioRecord?.setPreferredDevice(preferredDevice)
+    }
+
     private fun createAudioPipes(settings: Settings): AudioPipes? {
         val preferred = settings.preferredSampleRate
         val candidates = listOf(preferred, 2000, 4000, 8000, 16000, 44100).distinct()
@@ -181,6 +190,10 @@ class LoopbackAudioEngine(
                     )
                     .setBufferSizeInBytes(bufferSize * 2)
                     .build()
+
+                preferredInputDeviceProvider.get()?.invoke()?.let { device ->
+                    record.setPreferredDevice(device)
+                }
 
                 track = AudioTrack.Builder()
                     .setAudioAttributes(

@@ -3767,6 +3767,14 @@ string hide_bottom_view_on_scroll_behavior
 string icon_content_description
 string in_progress
 string indeterminate
+string input_device_bluetooth
+string input_device_builtin
+string input_device_combined_label
+string input_device_default
+string input_device_other
+string input_device_title
+string input_device_usb
+string input_device_wired
 string item_view_role_description
 string m3_exceed_max_badge_text_suffix
 string m3_ref_typeface_brand_medium

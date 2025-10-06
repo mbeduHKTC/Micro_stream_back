@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.hearingaidstreamer.ui.InputDeviceOption
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.hearingaidstreamer.permissions.missingPermissions
 import com.example.hearingaidstreamer.telecom.CallLifecycleState
@@ -65,6 +66,8 @@ class MainActivity : ComponentActivity() {
                     val includeMurmurs by viewModel.includeMurmurs.collectAsStateWithLifecycleCompat()
                     val mainsFrequency by viewModel.mainsFrequency.collectAsStateWithLifecycleCompat()
                     val isMuted by viewModel.isMuted.collectAsStateWithLifecycleCompat()
+                    val inputDevices by viewModel.inputDevices.collectAsStateWithLifecycleCompat()
+                    val selectedInputDeviceId by viewModel.selectedInputDeviceId.collectAsStateWithLifecycleCompat()
 
                     val requiredPermissions = remember {
                         buildList {
@@ -112,12 +115,15 @@ class MainActivity : ComponentActivity() {
                         includeMurmurs = includeMurmurs,
                         mainsFrequency = mainsFrequency,
                         isMuted = isMuted,
+                        inputDevices = inputDevices,
+                        selectedInputDeviceId = selectedInputDeviceId,
                         endpoints = endpoints,
                         activeEndpoint = activeEndpoint,
                         missingPermissions = missing,
                         onRequestPermissions = {
                             permissionLauncher.launch(requiredPermissions.toTypedArray())
                         },
+                        onSelectInputDevice = viewModel::onInputDeviceSelected,
                         onToggleMute = viewModel::toggleMute,
                         onSelectEndpoint = viewModel::requestEndpoint,
                         onGainChanged = viewModel::onGainPositionChanged,
@@ -138,10 +144,13 @@ private fun MainScreen(
     includeMurmurs: Boolean,
     mainsFrequency: Int,
     isMuted: Boolean,
+    inputDevices: List<InputDeviceOption>,
+    selectedInputDeviceId: Int?,
     endpoints: List<android.telecom.CallEndpoint>,
     activeEndpoint: android.telecom.CallEndpoint?,
     missingPermissions: List<String>,
     onRequestPermissions: () -> Unit,
+    onSelectInputDevice: (Int?) -> Unit,
     onToggleMute: () -> Unit,
     onSelectEndpoint: (android.telecom.CallEndpoint) -> Unit,
     onGainChanged: (Float) -> Unit,
@@ -183,6 +192,14 @@ private fun MainScreen(
                 onMainsFrequencyChanged = onMainsFrequencyChanged
             )
 
+            if (inputDevices.isNotEmpty()) {
+                InputDeviceSelector(
+                    devices = inputDevices,
+                    selectedDeviceId = selectedInputDeviceId,
+                    onSelectDevice = onSelectInputDevice
+                )
+            }
+
             if (missingPermissions.isNotEmpty()) {
                 PermissionCard(missingPermissions = missingPermissions, onRequestPermissions = onRequestPermissions)
             } else {
@@ -220,6 +237,36 @@ private fun MainScreen(
                         )
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun InputDeviceSelector(
+    devices: List<InputDeviceOption>,
+    selectedDeviceId: Int?,
+    onSelectDevice: (Int?) -> Unit
+) {
+    val context = LocalContext.current
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(text = context.getString(com.example.hearingaidstreamer.R.string.input_device_title), style = MaterialTheme.typography.titleMedium)
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            item(key = "default") {
+                val selected = selectedDeviceId == null
+                FilterChip(
+                    selected = selected,
+                    onClick = { onSelectDevice(null) },
+                    label = { Text(context.getString(com.example.hearingaidstreamer.R.string.input_device_default)) }
+                )
+            }
+            items(devices, key = { it.id }) { device ->
+                val selected = selectedDeviceId == device.id
+                FilterChip(
+                    selected = selected,
+                    onClick = { onSelectDevice(device.id) },
+                    label = { Text(device.label) }
+                )
             }
         }
     }
