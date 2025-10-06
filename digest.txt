@@ -151,8 +151,9 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
-
-    implementation("androidx.core.telecom:telecom:1.0.0-beta01")
+    implementation("com.google.android.material:material:1.12.0")
+    implementation("androidx.media:media:1.7.0")
+    implementation("androidx.core:core-telecom:1.0.0-beta01")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
@@ -161,6 +162,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
+
 
 
 ================================================
@@ -223,36 +225,68 @@ import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.AudioTrack
 import android.media.MediaRecorder
+import java.util.concurrent.atomic.AtomicReference
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.max
+import kotlin.math.sin
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- * Captures raw microphone audio and replays it through the voice communication stream.
- * This keeps the audio routing managed by the Telecom stack (e.g. hearing aids) intact.
+ * Captures microphone audio, applies the narrow-band filtering pipeline, and replays it while
+ * emitting an envelope signal for visualisation.
  */
 class LoopbackAudioEngine(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
+
+    data class Settings(
+        val includeMurmurs: Boolean = false,
+        val mainsFrequencyHz: Int = 50,
+        val gainMultiplier: Float = 1f,
+        val preferredSampleRate: Int = 2000
+    )
+
+    private val settingsRef = AtomicReference(Settings())
+    private val _envelopeFlow = MutableSharedFlow<Float>(extraBufferCapacity = 512)
+    val envelopeFlow: SharedFlow<Float> = _envelopeFlow
+
     private var job: Job? = null
     private var audioRecord: AudioRecord? = null
     private var audioTrack: AudioTrack? = null
 
-    fun start(scope: CoroutineScope, sampleRate: Int = 16_000) {
+    @Volatile
+    private var filtersDirty: Boolean = true
+
+    fun updateSettings(block: (Settings) -> Settings) {
+        settingsRef.updateAndGet { current -> block(current) }
+        filtersDirty = true
+    }
+
+    fun currentSettings(): Settings = settingsRef.get()
+
+    fun start(scope: CoroutineScope) {
         if (job != null) return
+        val settings = settingsRef.get()
+        val sampleRate = chooseSampleRate(settings.preferredSampleRate)
 
         val channelConfig = AudioFormat.CHANNEL_IN_MONO
         val audioFormat = AudioFormat.ENCODING_PCM_16BIT
         val minBufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat)
-        val bufferSize = minBufferSize.coerceAtLeast(sampleRate)
+        val bufferSize = max(minBufferSize, sampleRate)
 
         val record = AudioRecord.Builder()
-            .setAudioSource(MediaRecorder.AudioSource.VOICE_COMMUNICATION)
+            .setAudioSource(MediaRecorder.AudioSource.MIC)
             .setAudioFormat(
                 AudioFormat.Builder()
                     .setSampleRate(sampleRate)
@@ -266,7 +300,7 @@ class LoopbackAudioEngine(
         val track = AudioTrack.Builder()
             .setAudioAttributes(
                 AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
                     .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
                     .build()
             )
@@ -288,12 +322,48 @@ class LoopbackAudioEngine(
         audioTrack = track
 
         job = scope.launch(dispatcher) {
+            val filterChainFactory = FilterChainFactory(sampleRate)
+            var localSettings = settings
+            var filterChain = filterChainFactory.create(localSettings)
+            var envelope = EnvelopeDetector(sampleRate)
+
             val buffer = ShortArray(bufferSize)
+            val publishWindow = max(sampleRate / 25, 1)
+            var accumulator = 0f
+            var accumulatorCount = 0
+
             while (isActive) {
                 val read = record.read(buffer, 0, buffer.size)
-                if (read > 0) {
-                    track.write(buffer, 0, read)
+                if (read <= 0) continue
+
+                val currentSettings = settingsRef.get()
+                if (filtersDirty || currentSettings != localSettings) {
+                    filterChain = filterChainFactory.create(currentSettings)
+                    envelope = EnvelopeDetector(sampleRate)
+                    localSettings = currentSettings
+                    filtersDirty = false
                 }
+
+                var i = 0
+                while (i < read) {
+                    val raw = buffer[i] / Short.MAX_VALUE.toFloat()
+                    val filtered = filterChain.process(raw)
+                    val amplified = (filtered * localSettings.gainMultiplier).coerceIn(-1f, 1f)
+                    buffer[i] = (amplified * Short.MAX_VALUE.toFloat()).toInt().coerceIn(-32768, 32767).toShort()
+
+                    val env = envelope.process(amplified)
+                    accumulator += env
+                    accumulatorCount++
+                    if (accumulatorCount >= publishWindow) {
+                        val avg = accumulator / accumulatorCount
+                        _envelopeFlow.tryEmit(avg)
+                        accumulator = 0f
+                        accumulatorCount = 0
+                    }
+                    i++
+                }
+
+                track.write(buffer, 0, read)
             }
         }
     }
@@ -322,8 +392,146 @@ class LoopbackAudioEngine(
         }
         audioRecord = null
         audioTrack = null
+        filtersDirty = true
+    }
+
+    private fun chooseSampleRate(preferred: Int): Int {
+        val candidates = listOf(preferred, 2000, 4000, 8000, 16000, 44100)
+        val channelConfig = AudioFormat.CHANNEL_IN_MONO
+        val audioFormat = AudioFormat.ENCODING_PCM_16BIT
+        return candidates.firstOrNull { rate ->
+            val minBuffer = AudioRecord.getMinBufferSize(rate, channelConfig, audioFormat)
+            minBuffer > 0
+        } ?: 16000
+    }
+
+    private class FilterChainFactory(private val sampleRate: Int) {
+        fun create(settings: Settings): FilterChain {
+            val cutoffHigh = 20f
+            val cutoffLow = if (settings.includeMurmurs) 400f else 150f
+            val notchFreq = settings.mainsFrequencyHz.toFloat()
+            return FilterChain(sampleRate.toFloat(), cutoffHigh, cutoffLow, notchFreq)
+        }
+    }
+
+    private class FilterChain(
+        private val sampleRate: Float,
+        highPassCutoff: Float,
+        lowPassCutoff: Float,
+        notchFrequency: Float
+    ) {
+        private val hpSections = arrayOf(
+            Biquad.highPass(sampleRate, highPassCutoff, Q1),
+            Biquad.highPass(sampleRate, highPassCutoff, Q2)
+        )
+        private val notch = Biquad.notch(sampleRate, notchFrequency, 35f)
+        private val lpSections = arrayOf(
+            Biquad.lowPass(sampleRate, lowPassCutoff, Q1),
+            Biquad.lowPass(sampleRate, lowPassCutoff, Q2)
+        )
+
+        fun process(sample: Float): Float {
+            var value = sample
+            hpSections.forEach { value = it.process(value) }
+            value = notch.process(value)
+            lpSections.forEach { value = it.process(value) }
+            return value
+        }
+
+        companion object {
+            private const val Q1 = 0.5411961f
+            private const val Q2 = 1.306563f
+        }
+    }
+
+    private class EnvelopeDetector(sampleRate: Int) {
+        private val lowPass = Biquad.lowPass(sampleRate.toFloat(), 8f, 0.707f)
+        fun process(sample: Float): Float {
+            val rectified = abs(sample)
+            return lowPass.process(rectified)
+        }
+    }
+
+    private class Biquad private constructor(
+        private var sampleRate: Float,
+        private var frequency: Float,
+        private var q: Float,
+        private val type: Type
+    ) {
+        private var a1 = 0f
+        private var a2 = 0f
+        private var b0 = 0f
+        private var b1 = 0f
+        private var b2 = 0f
+        private var z1 = 0f
+        private var z2 = 0f
+
+        init {
+            recalculate()
+        }
+
+        fun process(input: Float): Float {
+            val output = b0 * input + z1
+            z1 = b1 * input - a1 * output + z2
+            z2 = b2 * input - a2 * output
+            return output
+        }
+
+        private fun recalculate() {
+            val omega = 2f * PI.toFloat() * frequency / sampleRate
+            val sin = sin(omega)
+            val cos = cos(omega)
+            val alpha = sin / (2f * q)
+            when (type) {
+                Type.LOW_PASS -> {
+                    val b0Raw = (1f - cos) / 2f
+                    val b1Raw = 1f - cos
+                    val b2Raw = (1f - cos) / 2f
+                    val a0 = 1f + alpha
+                    val a1Raw = -2f * cos
+                    val a2Raw = 1f - alpha
+                    setCoefficients(b0Raw, b1Raw, b2Raw, a0, a1Raw, a2Raw)
+                }
+                Type.HIGH_PASS -> {
+                    val b0Raw = (1f + cos) / 2f
+                    val b1Raw = -(1f + cos)
+                    val b2Raw = (1f + cos) / 2f
+                    val a0 = 1f + alpha
+                    val a1Raw = -2f * cos
+                    val a2Raw = 1f - alpha
+                    setCoefficients(b0Raw, b1Raw, b2Raw, a0, a1Raw, a2Raw)
+                }
+                Type.NOTCH -> {
+                    val b0Raw = 1f
+                    val b1Raw = -2f * cos
+                    val b2Raw = 1f
+                    val a0 = 1f + alpha
+                    val a1Raw = -2f * cos
+                    val a2Raw = 1f - alpha
+                    setCoefficients(b0Raw, b1Raw, b2Raw, a0, a1Raw, a2Raw)
+                }
+            }
+        }
+
+        private fun setCoefficients(b0Raw: Float, b1Raw: Float, b2Raw: Float, a0: Float, a1Raw: Float, a2Raw: Float) {
+            val invA0 = 1f / a0
+            b0 = b0Raw * invA0
+            b1 = b1Raw * invA0
+            b2 = b2Raw * invA0
+            a1 = a1Raw * invA0
+            a2 = a2Raw * invA0
+        }
+
+        companion object {
+            fun lowPass(sampleRate: Float, frequency: Float, q: Float) = Biquad(sampleRate, frequency, q, Type.LOW_PASS)
+            fun highPass(sampleRate: Float, frequency: Float, q: Float) = Biquad(sampleRate, frequency, q, Type.HIGH_PASS)
+            fun notch(sampleRate: Float, frequency: Float, q: Float) = Biquad(sampleRate, frequency, q, Type.NOTCH)
+        }
+
+        private enum class Type { LOW_PASS, HIGH_PASS, NOTCH }
     }
 }
+
 
 
 ================================================
@@ -686,10 +894,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
@@ -700,7 +911,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -709,7 +922,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -719,7 +936,6 @@ import com.example.hearingaidstreamer.telecom.CallLifecycleState
 import com.example.hearingaidstreamer.telecom.CallRouteFormatter
 import com.example.hearingaidstreamer.telecom.readableStatus
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -727,11 +943,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             MaterialTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    val context = LocalContext.current
+                    val context = this@MainActivity
                     val viewModel: MainViewModel = viewModel(factory = MainViewModel.factory(context))
                     val callState by viewModel.callState.collectAsStateWithLifecycleCompat()
                     val endpoints by viewModel.availableEndpoints.collectAsStateWithLifecycleCompat()
                     val activeEndpoint by viewModel.activeEndpoint.collectAsStateWithLifecycleCompat()
+                    val waveform by viewModel.waveform.collectAsStateWithLifecycleCompat()
+                    val gainPosition by viewModel.gainPosition.collectAsStateWithLifecycleCompat()
+                    val includeMurmurs by viewModel.includeMurmurs.collectAsStateWithLifecycleCompat()
+                    val mainsFrequency by viewModel.mainsFrequency.collectAsStateWithLifecycleCompat()
 
                     val requiredPermissions = remember {
                         buildList {
@@ -739,6 +959,9 @@ class MainActivity : ComponentActivity() {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                                 add(Manifest.permission.BLUETOOTH_CONNECT)
                                 add(Manifest.permission.BLUETOOTH_SCAN)
+                            }
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                add(Manifest.permission.POST_NOTIFICATIONS)
                             }
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                                 add(Manifest.permission.MANAGE_OWN_CALLS)
@@ -765,15 +988,22 @@ class MainActivity : ComponentActivity() {
 
                     MainScreen(
                         state = callState,
+                        waveform = waveform,
+                        gainPosition = gainPosition,
+                        includeMurmurs = includeMurmurs,
+                        mainsFrequency = mainsFrequency,
                         endpoints = endpoints,
                         activeEndpoint = activeEndpoint,
                         missingPermissions = missing,
                         onRequestPermissions = {
                             permissionLauncher.launch(requiredPermissions.toTypedArray())
                         },
-                        onStart = { viewModel.startCall() },
-                        onStop = { viewModel.stopCall() },
-                        onSelectEndpoint = { endpoint -> viewModel.requestEndpoint(endpoint) }
+                        onStart = viewModel::startCall,
+                        onStop = viewModel::stopCall,
+                        onSelectEndpoint = viewModel::requestEndpoint,
+                        onGainChanged = viewModel::onGainPositionChanged,
+                        onIncludeMurmursChanged = viewModel::onIncludeMurmursChanged,
+                        onMainsFrequencyChanged = viewModel::onMainsFrequencyChanged
                     )
                 }
             }
@@ -784,18 +1014,22 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun MainScreen(
     state: CallLifecycleState,
+    waveform: List<Float>,
+    gainPosition: Float,
+    includeMurmurs: Boolean,
+    mainsFrequency: Int,
     endpoints: List<android.telecom.CallEndpoint>,
     activeEndpoint: android.telecom.CallEndpoint?,
     missingPermissions: List<String>,
     onRequestPermissions: () -> Unit,
     onStart: () -> Unit,
     onStop: () -> Unit,
-    onSelectEndpoint: (android.telecom.CallEndpoint) -> Unit
+    onSelectEndpoint: (android.telecom.CallEndpoint) -> Unit,
+    onGainChanged: (Float) -> Unit,
+    onIncludeMurmursChanged: (Boolean) -> Unit,
+    onMainsFrequencyChanged: (Int) -> Unit
 ) {
     val context = LocalContext.current
-    val isActive = state is CallLifecycleState.Active
-    val isConnecting = state is CallLifecycleState.Connecting
-
     Scaffold { paddingValues ->
         Column(
             modifier = Modifier
@@ -810,46 +1044,36 @@ private fun MainScreen(
             )
 
             when (state) {
-                is CallLifecycleState.Connecting -> {
-                    CircularProgressIndicator()
-                }
-
-                is CallLifecycleState.Error -> {
-                    Text(
-                        text = state.message,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
-
+                is CallLifecycleState.Connecting -> CircularProgressIndicator()
+                is CallLifecycleState.Error -> Text(
+                    text = state.message,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error
+                )
                 else -> Unit
             }
 
+            WaveformCard(samples = waveform, modifier = Modifier.fillMaxWidth().height(160.dp))
+
+            GainSlider(gainPosition = gainPosition, onGainChanged = onGainChanged)
+
+            MainsAndMurmurControls(
+                includeMurmurs = includeMurmurs,
+                mainsFrequency = mainsFrequency,
+                onIncludeMurmursChanged = onIncludeMurmursChanged,
+                onMainsFrequencyChanged = onMainsFrequencyChanged
+            )
+
             if (missingPermissions.isNotEmpty()) {
-                Card(modifier = Modifier.padding(vertical = 8.dp)) {
-                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(
-                            text = context.getString(com.example.hearingaidstreamer.R.string.microphone_permission_rationale),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                        Button(onClick = onRequestPermissions) {
-                            Text(text = context.getString(com.example.hearingaidstreamer.R.string.grant_permissions))
-                        }
-                    }
-                }
+                PermissionCard(missingPermissions = missingPermissions, onRequestPermissions = onRequestPermissions)
             } else {
                 val canStart = state is CallLifecycleState.Idle || state is CallLifecycleState.Error
-                Button(
-                    onClick = onStart,
-                    enabled = canStart && missingPermissions.isEmpty()
-                ) {
+                Button(onClick = onStart, enabled = canStart) {
                     Text(text = context.getString(com.example.hearingaidstreamer.R.string.start_stream))
                 }
+
                 val canStop = state is CallLifecycleState.Active || state is CallLifecycleState.Connecting || state is CallLifecycleState.Ending
-                Button(
-                    onClick = onStop,
-                    enabled = canStop
-                ) {
+                Button(onClick = onStop, enabled = canStop) {
                     Text(text = context.getString(com.example.hearingaidstreamer.R.string.stop_stream))
                 }
 
@@ -887,6 +1111,94 @@ private fun MainScreen(
 }
 
 @Composable
+private fun WaveformCard(samples: List<Float>, modifier: Modifier = Modifier) {
+    Card(modifier = modifier) {
+        Canvas(modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp, vertical = 8.dp)) {
+            if (samples.isEmpty()) return@Canvas
+            val maxAmp = samples.maxOrNull()?.coerceAtLeast(1e-3f) ?: 1e-3f
+            val stepX = if (samples.size > 1) size.width / (samples.size - 1f) else size.width
+            val path = Path()
+            samples.forEachIndexed { index, value ->
+                val norm = (value / maxAmp).coerceIn(0f, 1f)
+                val x = index * stepX
+                val y = size.height - (norm * size.height)
+                if (index == 0) path.moveTo(x, y) else path.lineTo(x, y)
+            }
+            drawPath(
+                path = path,
+                color = MaterialTheme.colorScheme.primary,
+                style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round)
+            )
+        }
+    }
+}
+
+@Composable
+private fun GainSlider(gainPosition: Float, onGainChanged: (Float) -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            text = "Gain ${MainViewModel.gainLabel(gainPosition)}",
+            style = MaterialTheme.typography.titleMedium
+        )
+        Slider(
+            value = gainPosition,
+            onValueChange = onGainChanged,
+            valueRange = 0f..1f
+        )
+    }
+}
+
+@Composable
+private fun MainsAndMurmurControls(
+    includeMurmurs: Boolean,
+    mainsFrequency: Int,
+    onIncludeMurmursChanged: (Boolean) -> Unit,
+    onMainsFrequencyChanged: (Int) -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(text = "Acoustic emphasis", style = MaterialTheme.typography.titleMedium)
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Text(text = "Include murmurs")
+            Switch(checked = includeMurmurs, onCheckedChange = onIncludeMurmursChanged)
+        }
+        Text(text = "Mains frequency", style = MaterialTheme.typography.labelLarge)
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            listOf(50, 60).forEach { value ->
+                FilterChip(
+                    selected = value == mainsFrequency,
+                    onClick = { onMainsFrequencyChanged(value) },
+                    label = { Text("${value} Hz") }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PermissionCard(missingPermissions: List<String>, onRequestPermissions: () -> Unit) {
+    val context = LocalContext.current
+    Card(modifier = Modifier.padding(vertical = 8.dp)) {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            missingPermissions.mapNotNull { permission ->
+                when (permission) {
+                    Manifest.permission.RECORD_AUDIO -> context.getString(com.example.hearingaidstreamer.R.string.microphone_permission_rationale)
+                    Manifest.permission.BLUETOOTH_CONNECT,
+                    Manifest.permission.BLUETOOTH_SCAN -> context.getString(com.example.hearingaidstreamer.R.string.bluetooth_permission_rationale)
+                    Manifest.permission.MANAGE_OWN_CALLS -> context.getString(com.example.hearingaidstreamer.R.string.call_permission_rationale)
+                    Manifest.permission.POST_NOTIFICATIONS -> context.getString(com.example.hearingaidstreamer.R.string.notification_permission_rationale)
+                    else -> null
+                }
+            }.distinct().forEach { rationale ->
+                Text(text = rationale, style = MaterialTheme.typography.bodyMedium)
+            }
+            Button(onClick = onRequestPermissions) {
+                Text(text = context.getString(com.example.hearingaidstreamer.R.string.grant_permissions))
+            }
+        }
+    }
+}
+
+@Composable
 private fun <T> StateFlow<T>.collectAsStateWithLifecycleCompat(): androidx.compose.runtime.State<T> {
     val stateFlow = this
     val initialValue = remember(stateFlow) { stateFlow.value }
@@ -896,6 +1208,7 @@ private fun <T> StateFlow<T>.collectAsStateWithLifecycleCompat(): androidx.compo
     }
     return state
 }
+
 
 
 ================================================
@@ -911,20 +1224,38 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.hearingaidstreamer.R
 import com.example.hearingaidstreamer.audio.LoopbackAudioEngine
+import com.example.hearingaidstreamer.media.StreamMediaSessionController
 import com.example.hearingaidstreamer.telecom.CallLifecycleState
 import com.example.hearingaidstreamer.telecom.TelecomCallManager
+import java.util.ArrayDeque
+import java.util.Locale
+import kotlin.math.exp
+import kotlin.math.ln
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class MainViewModel(private val appContext: Context) : ViewModel() {
 
     private val audioEngine = LoopbackAudioEngine()
 
-    private val callManager: TelecomCallManager? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-        TelecomCallManager(appContext, viewModelScope, audioEngine)
-    } else {
-        null
-    }
+    private val mediaController: StreamMediaSessionController?
+    private val callManager: TelecomCallManager?
+
+    private val _gainPosition = MutableStateFlow(0f)
+    val gainPosition: StateFlow<Float> = _gainPosition.asStateFlow()
+
+    private val _includeMurmurs = MutableStateFlow(false)
+    val includeMurmurs: StateFlow<Boolean> = _includeMurmurs.asStateFlow()
+
+    private val _mainsFrequency = MutableStateFlow(50)
+    val mainsFrequency: StateFlow<Int> = _mainsFrequency.asStateFlow()
+
+    private val amplitudeHistory = ArrayDeque<Float>()
+    private val _waveform = MutableStateFlow<List<Float>>(emptyList())
+    val waveform: StateFlow<List<Float>> = _waveform.asStateFlow()
 
     private val unsupportedState = MutableStateFlow<CallLifecycleState>(
         CallLifecycleState.Error(appContext.getString(R.string.unsupported_version))
@@ -933,9 +1264,44 @@ class MainViewModel(private val appContext: Context) : ViewModel() {
     private val emptyEndpoints = MutableStateFlow<List<CallEndpoint>>(emptyList())
     private val nullEndpoint = MutableStateFlow<CallEndpoint?>(null)
 
-    val callState: StateFlow<CallLifecycleState> = callManager?.state ?: unsupportedState
-    val availableEndpoints: StateFlow<List<CallEndpoint>> = callManager?.availableEndpoints ?: emptyEndpoints
-    val activeEndpoint: StateFlow<CallEndpoint?> = callManager?.activeEndpoint ?: nullEndpoint
+    val callState: StateFlow<CallLifecycleState>
+    val availableEndpoints: StateFlow<List<CallEndpoint>>
+    val activeEndpoint: StateFlow<CallEndpoint?>
+
+    init {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            var createdManager: TelecomCallManager? = null
+            val controller = StreamMediaSessionController(appContext, viewModelScope, audioEngine) {
+                createdManager?.stopCall()
+            }
+            val manager = TelecomCallManager(appContext, viewModelScope, controller)
+            createdManager = manager
+            mediaController = controller
+            callManager = manager
+        } else {
+            mediaController = null
+            callManager = null
+        }
+
+        callState = callManager?.state ?: unsupportedState
+        availableEndpoints = callManager?.availableEndpoints ?: emptyEndpoints
+        activeEndpoint = callManager?.activeEndpoint ?: nullEndpoint
+
+        // Apply initial settings to the audio engine
+        audioEngine.updateSettings { current ->
+            current.copy(
+                includeMurmurs = _includeMurmurs.value,
+                mainsFrequencyHz = _mainsFrequency.value,
+                gainMultiplier = sliderToGain(_gainPosition.value)
+            )
+        }
+
+        viewModelScope.launch {
+            audioEngine.envelopeFlow.collect { value ->
+                appendAmplitude(value)
+            }
+        }
+    }
 
     fun startCall() {
         callManager?.startCall()
@@ -949,20 +1315,60 @@ class MainViewModel(private val appContext: Context) : ViewModel() {
         callManager?.requestEndpointChange(endpoint)
     }
 
+    fun onGainPositionChanged(position: Float) {
+        _gainPosition.value = position
+        audioEngine.updateSettings { current -> current.copy(gainMultiplier = sliderToGain(position)) }
+    }
+
+    fun onIncludeMurmursChanged(enabled: Boolean) {
+        _includeMurmurs.value = enabled
+        audioEngine.updateSettings { current -> current.copy(includeMurmurs = enabled) }
+    }
+
+    fun onMainsFrequencyChanged(frequency: Int) {
+        _mainsFrequency.value = frequency
+        audioEngine.updateSettings { current -> current.copy(mainsFrequencyHz = frequency) }
+    }
+
     override fun onCleared() {
         callManager?.stopCall()
+        mediaController?.let { controller ->
+            viewModelScope.launch { controller.release() }
+        }
         super.onCleared()
     }
 
+    private fun appendAmplitude(sample: Float) {
+        val capped = sample.coerceIn(0f, 1f)
+        amplitudeHistory.addLast(capped)
+        while (amplitudeHistory.size > HISTORY_CAPACITY) {
+            amplitudeHistory.removeFirst()
+        }
+        _waveform.value = amplitudeHistory.toList()
+    }
+
     companion object {
+        private const val HISTORY_SECONDS = 60
+        private const val SAMPLES_PER_SECOND = 25
+        private const val HISTORY_CAPACITY = HISTORY_SECONDS * SAMPLES_PER_SECOND
+
+        fun sliderToGain(position: Float): Float {
+            val clamped = position.coerceIn(0f, 1f)
+            return exp(ln(50f) * clamped)
+        }
+
+        fun gainLabel(position: Float): String = String.format(Locale.US, "×%.1f", sliderToGain(position))
+
         fun factory(appContext: Context): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 require(modelClass.isAssignableFrom(MainViewModel::class.java))
+                @Suppress("UNCHECKED_CAST")
                 return MainViewModel(appContext.applicationContext) as T
             }
         }
     }
 }
+
 
 
 ================================================
@@ -1037,7 +1443,7 @@ File: app/src/main/res/values/strings.xml
 ================================================
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Hearing Aid Streamer</string>
+    <string name="app_name">Steto Hearing Aid Streamer</string>
     <string name="start_stream">Start Stream</string>
     <string name="stop_stream">Stop Stream</string>
     <string name="bluetooth_route">Bluetooth</string>
