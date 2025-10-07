@@ -66,7 +66,7 @@ class LoopbackAudioEngine(
         val settings = settingsRef.get()
         val pipes = createAudioPipes(settings) ?: return
         val sampleRate = pipes.sampleRate
-        val bufferSize = pipes.bufferSize
+        val chunkFrames = pipes.chunkFrames
         val record = pipes.record
         val track = pipes.track
 
@@ -83,7 +83,7 @@ class LoopbackAudioEngine(
             var filterChain = filterChainFactory.create(localSettings)
             var envelope = EnvelopeDetector(sampleRate)
 
-            val buffer = ShortArray(bufferSize)
+            val buffer = ShortArray(chunkFrames)
             val publishWindow = max(sampleRate / 25, 1)
             var accumulator = 0f
             var accumulatorCount = 0
@@ -171,11 +171,21 @@ class LoopbackAudioEngine(
         val candidates = listOf(preferred, 2000, 4000, 8000, 16000, 44100).distinct()
         val channelConfig = AudioFormat.CHANNEL_IN_MONO
         val audioFormat = AudioFormat.ENCODING_PCM_16BIT
+        val outputChannelConfig = AudioFormat.CHANNEL_OUT_MONO
+        val bytesPerFrame = Short.SIZE_BYTES // PCM16 mono
 
         for (rate in candidates) {
-            val minBuffer = AudioRecord.getMinBufferSize(rate, channelConfig, audioFormat)
-            if (minBuffer <= 0) continue
-            val bufferSize = max(minBuffer, rate)
+            val recordMinBytes = AudioRecord.getMinBufferSize(rate, channelConfig, audioFormat)
+            val trackMinBytes = AudioTrack.getMinBufferSize(rate, outputChannelConfig, audioFormat)
+            if (recordMinBytes <= 0 || trackMinBytes <= 0) continue
+
+            val recordMinFrames = recordMinBytes / bytesPerFrame
+            val trackMinFrames = trackMinBytes / bytesPerFrame
+            val chunkFrames = max(rate / 200, 32)
+
+            val recordBufferFrames = max(recordMinFrames, chunkFrames * 2)
+            val trackBufferFrames = max(trackMinFrames, chunkFrames * 2)
+
             var record: AudioRecord? = null
             var track: AudioTrack? = null
             try {
@@ -188,7 +198,7 @@ class LoopbackAudioEngine(
                             .setChannelMask(channelConfig)
                             .build()
                     )
-                    .setBufferSizeInBytes(bufferSize * 2)
+                    .setBufferSizeInBytes(recordBufferFrames * bytesPerFrame)
                     .build()
 
                 preferredInputDeviceProvider.get()?.invoke()?.let { device ->
@@ -206,14 +216,14 @@ class LoopbackAudioEngine(
                         AudioFormat.Builder()
                             .setSampleRate(rate)
                             .setEncoding(audioFormat)
-                            .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
+                            .setChannelMask(outputChannelConfig)
                             .build()
                     )
-                    .setBufferSizeInBytes(bufferSize * 2)
+                    .setBufferSizeInBytes(trackBufferFrames * bytesPerFrame)
                     .setTransferMode(AudioTrack.MODE_STREAM)
                     .build()
 
-                return AudioPipes(rate, bufferSize, record, track)
+                return AudioPipes(rate, chunkFrames, record, track)
             } catch (error: IllegalArgumentException) {
                 record?.release()
                 track?.release()
@@ -224,7 +234,7 @@ class LoopbackAudioEngine(
 
     private data class AudioPipes(
         val sampleRate: Int,
-        val bufferSize: Int,
+        val chunkFrames: Int,
         val record: AudioRecord,
         val track: AudioTrack
     )
